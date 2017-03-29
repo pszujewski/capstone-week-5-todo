@@ -7,7 +7,7 @@ var app = express();
 
 app.use(express.static('public'));
 
-app.get('/', (req, res) => {
+app.get('/hi', (req, res) => {
   res.send("Success");
 });
 

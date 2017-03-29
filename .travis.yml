@@ -3,7 +3,7 @@ node_js: node
 deploy:
   provider: heroku
   api_key:
-    secure: <YOUR ENCRYPTED KEY HERE>
-  app: <YOUR APP NAME HERE>
+    secure: LjZrxZDgx/LjnXQVfHg7Rio3tGmPMLbZu8RmMbpPUffES1i7J9eyRkrC+HR91YRqvjI7ilXuyB8AE7Td5dGvQKueOLDpItwA2JKKxBcVcrzWCW/t0+g0zIcWLkMk956U4vxqJnzgOvXwMsFzE+c1JmPatwCspX7RHg1JSH5I4Y5X4MK674iTDkVxcoEios6IDHusR8ex+/R6fwNzM8w0E8DQ23JkZoO49Zw/GjPSxzCi4zjtom6TRM/cH8l7YHl/VdgW3IWRXRr0Jx5pkqHgUl1qY7FZkWI+iHIrvkb09cdoXYGHnbFLzl7utph3nToqmzAw9aniNd0OcaDKFYuZ+5allm28gdajBrCXm5pI9O+caAsRotEwoSdQxvkkuk8gx0IljFgd7AYYpIxI/ANy4reTJMB4BZFMHpcSmXIMn7Dg6tuOJEbJo5/GK7uOcPhLvCboXdzoUiyRU0HSxhKXez1No5YZY9xxqN0GL7ovItrcUnAtgYO9sAedRKgUX5R1Es8DY2COHbgoWySFTX38fHMeSOxjLQsASU9zxwIxptipS7eNiQwrCEdygYqhwum2fUA/CH6gqGS/rV9G8/lmDrP8oil9HyVrDRf4XShMlQ5KufNQD8zos1+nV8p9mvyVtYymnRvEwixYBtYBLI2NMWQ9s1GlUF/a7HOFgusrnsE=
+  app: peaceful-plateau-77274
   on:
-    repo: <YOUR REPO INFO HERE>
+    repo: Cohort-9/capstone-week-5-todo
