@@ -31,6 +31,10 @@ app.post('/', jsonParser, (req, res) => {
   .catch(error => { console.log(error.stack) });
 });
 
+app.delete('/', (req, res) => {
+  res.send('delete was successful');
+});
+
 app.listen(process.env.PORT || 8080);
 
 exports.app = app;
