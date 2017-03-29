@@ -2,6 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
+const { DEV } = require('./config');
+const knex = require('knex')(DEV);
+
 const app = express();
 
 app.use(function(req, res, next) {
@@ -17,7 +20,12 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', jsonParser, (req, res) => {
-  res.send(req.body.title);
+  const newItem = req.body.title;
+  knex.insert({item: newItem}).into('items')
+  .then(result => {
+    return res.status(201).json(result);
+  })
+  .catch(error => { console.log(error.stack) });
 });
 
 app.listen(process.env.PORT || 8080);
