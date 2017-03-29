@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', jsonParser, (req, res) => {
-  console.log(req.body.title);
+  res.send(req.body.title);
 });
 
 app.listen(process.env.PORT || 8080);
