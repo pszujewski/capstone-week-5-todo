@@ -16,7 +16,7 @@ app.use(function(req, res, next) {
 // app.use('/', express.static('public'));
 
 app.get('/', (req, res) => {
-  res.send("Yoyoyoyo");
+  res.send("new attempt");
 });
 
 app.post('/', jsonParser, (req, res) => {
