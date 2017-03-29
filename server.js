@@ -7,7 +7,7 @@ const knex = require('knex')(DEV);
 
 const app = express();
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "*");
   res.header("Access-Control-Allow-Headers", "*");
@@ -15,14 +15,17 @@ app.use(function(req, res, next) {
   next();
 });
 
-// app.use('/', express.static('public'));
+app.use('/', express.static('public'));
+
+let listItems = [];
+
+// Endpoints
 
 app.get('/', (req, res) => {
-  res.send("new attempt");
+  return res.json(listItems);
 });
 
 app.post('/', jsonParser, (req, res) => {
-  // res.json(req.body);
   const newItem = req.body.title;
   knex.insert({item: newItem}).into('items')
   .then(result => {
@@ -31,8 +34,12 @@ app.post('/', jsonParser, (req, res) => {
   .catch(error => { console.log(error.stack) });
 });
 
+app.put('/', (req, res) => {
+  return res.send('delete was successful');
+});
+
 app.delete('/', (req, res) => {
-  res.send('delete was successful');
+  return res.send('delete was successful');
 });
 
 app.listen(process.env.PORT || 8080);
