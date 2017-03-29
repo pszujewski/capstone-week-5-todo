@@ -23,7 +23,7 @@ app.post('/', jsonParser, (req, res) => {
   const newItem = req.body.title;
   knex.insert({item: newItem}).into('items')
   .then(result => {
-    return res.status(201).json({title: newItem});
+    return res.status(201).json(req.body);
   })
   .catch(error => { console.log(error.stack) });
 });
