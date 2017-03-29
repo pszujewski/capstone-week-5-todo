@@ -20,13 +20,13 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', jsonParser, (req, res) => {
-  res.json(req.body);
-  // const newItem = req.body.title;
-  // knex.insert({item: newItem}).into('items')
-  // .then(result => {
-  //   return res.status(201).json(req.body);
-  // })
-  // .catch(error => { console.log(error.stack) });
+  // res.json(req.body);
+  const newItem = req.body.title;
+  knex.insert({item: newItem}).into('items')
+  .then(result => {
+    return res.status(201).json(req.body);
+  })
+  .catch(error => { console.log(error.stack) });
 });
 
 app.listen(process.env.PORT || 8080);
