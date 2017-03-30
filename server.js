@@ -9,35 +9,66 @@ const knex = require('knex')(DEV);
 const app = express();
 
 // The cors module to implement cors headers
+
 app.use(cors());
 
-app.use('/', express.static('public'));
+// app.use('/', express.static('public'));
 
 let listItems = [];
 
 // Endpoints as of March 29
 
 app.get('/', (req, res) => {
-  return res.json(listItems);
+    knex.select('title', 'completed', 'url')
+        .from('items')
+        .then(results => {
+            console.log(results);
+            // map over the results & create api repr function 
+            return res.json(results);
+        });
+});
+
+app.get('/:id', (req, res) => {
+    const { id } = req.params;
 });
 
 app.post('/', jsonParser, (req, res) => {
-  const newItem = req.body.title;
-  const token = {title: newItem};
-  knex.insert({item: newItem}).into('items')
-  .then(result => {
-    return res.status(201).json(token);
-  })
-  .catch(error => { console.log(error.stack) });
+    const { title } = req.body;
+    const ourUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`
+    knex.insert({
+            title: title,
+            completed: false,
+            url: ourUrl
+        })
+        .into('items')
+        .returning(['id', 'title', 'completed', 'url'])
+        .then(result => {
+
+            knex.select('id', 'title', 'completed', 'url')
+                .returning('title', 'completed', 'url')
+                .from('items')
+                .where('id', result[result.length - 1].id)
+                .update({ url: ourUrl.concat(result[result.length - 1].id) })
+                .then(complete => {
+                    return res.status(201).json(result[0]);
+                })
+        })
+        .catch(error => { console.log(error.stack) });
 });
+
+
 
 app.delete('/', (req, res) => {
-  return res.send('delete was successful');
+    knex('items')
+        .del()
+        .then(result => {
+            return res.status(202).send('delete was successful');
+        })
 });
 
-app.put('/', (req, res) => {
-  return res.send('delete was successful');
-});
+// app.put('/', (req, res) => {
+//   return res.send('delete was successful');
+// });
 
 app.listen(process.env.PORT || 8080);
 
