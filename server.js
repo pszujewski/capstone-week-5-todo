@@ -22,7 +22,6 @@ app.get('/', (req, res) => {
     knex.select('title', 'completed', 'url')
         .from('items')
         .then(results => {
-            console.log(results);
             // map over the results & create api repr function 
             return res.json(results);
         });
@@ -30,6 +29,14 @@ app.get('/', (req, res) => {
 
 app.get('/:id', (req, res) => {
     const { id } = req.params;
+    knex.select('title', 'completed', 'url', 'id')
+    .from('items') 
+    .where('id', id)
+    .then(item => {
+      console.log(item[0]);
+      return res.status(200).json(item[0]);
+    })
+    .catch(err => { console.error(err) });
 });
 
 app.post('/', jsonParser, (req, res) => {
@@ -44,14 +51,21 @@ app.post('/', jsonParser, (req, res) => {
         .returning(['id', 'title', 'completed', 'url'])
         .then(result => {
 
-            knex.select('id', 'title', 'completed', 'url')
-                .returning('title', 'completed', 'url')
-                .from('items')
-                .where('id', result[result.length - 1].id)
-                .update({ url: ourUrl.concat(result[result.length - 1].id) })
-                .then(complete => {
-                    return res.status(201).json(result[0]);
-                })
+            return knex('items')
+             .where('id', result[result.length - 1].id)
+             .update({ url: ourUrl.concat(result[result.length - 1].id) })
+             .then(complete => {
+                result[0].url = ourUrl.concat(result[result.length - 1].id);
+                return res.status(201).json(result[0]);
+              })
+                //.select('id', 'title', 'completed', 'url')
+                // .returning('title', 'completed', 'url')
+                // .from('items')
+                // .where('id', result[result.length - 1].id)
+                // .update({ url: ourUrl.concat(result[result.length - 1].id) })
+                // .then(complete => {
+                //     return res.status(201).json(result[0]);
+                // })
         })
         .catch(error => { console.log(error.stack) });
 });
