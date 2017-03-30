@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const jsonParser = bodyParser.json();
 
 const { DEV } = require('./config');
@@ -7,13 +8,8 @@ const knex = require('knex')(DEV);
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+// The cors module to implement cors headers
+app.use(cors());
 
 app.use('/', express.static('public'));
 
@@ -34,11 +30,11 @@ app.post('/', jsonParser, (req, res) => {
   .catch(error => { console.log(error.stack) });
 });
 
-app.put('/', (req, res) => {
+app.delete('/', (req, res) => {
   return res.send('delete was successful');
 });
 
-app.delete('/', (req, res) => {
+app.put('/', (req, res) => {
   return res.send('delete was successful');
 });
 
