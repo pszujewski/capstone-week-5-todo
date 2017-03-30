@@ -19,7 +19,7 @@ app.use('/', express.static('public'));
 
 let listItems = [];
 
-// Endpoints
+// Endpoints as of March 29
 
 app.get('/', (req, res) => {
   return res.json(listItems);
