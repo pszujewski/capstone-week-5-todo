@@ -25,7 +25,7 @@ It uses Express.js, Knex.js, and is backed up by a PostgreSQL database hosted on
 #### Create user and database
 ```bash
 > createuser -Pw --interactive
-> createdb todo-app -U <usernamegoeshere>
+> createdb -U <usernamegoeshere> todo-app
 ```
 
 #### Start and stop local PostgreSQL db server
@@ -39,30 +39,7 @@ It uses Express.js, Knex.js, and is backed up by a PostgreSQL database hosted on
 #### Create table and sequence 
 
 ```bash
-> CREATE SEQUENCE items_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-    
-> CREATE TABLE items (
-    id integer NOT NULL,
-    title text NOT NULL,
-    completed boolean,
-    url text,
-    order smallint
-);
-```
-
-#### Alter items table
-
-```bash
-> ALTER SEQUENCE items_id_seq OWNED BY items.id;
-
-> ALTER TABLE ONLY items ALTER COLUMN id SET DEFAULT nextval('items_id_seq'::regclass);
-
-> ALTER TABLE ONLY items ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+> psql -U <usernamegoeshere> todo-app -f ~/path-to-schema.sql-file
 ```
 
 ## 4) Run the server
@@ -84,7 +61,6 @@ Or configure access to your local postgreSQL server with the following
 > travis setup 
 ```
 
-```
 ## 6) Deploy to Heroku
 ```bash
 > heroku create
