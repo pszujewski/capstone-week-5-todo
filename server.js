@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const jsonParser = bodyParser.json();
 
-require('dotenv');
+require('dotenv').config();
 
 const { DEV } = require('./config');
 const knex = require('knex')(DEV);
