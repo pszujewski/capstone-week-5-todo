@@ -17,12 +17,12 @@ app.use(cors());
 let listItems = [];
 
 app.get('/', (req, res) => {
-    knex.select('title', 'completed', 'url')
-        .from('items')
-        .then(results => {
-            // map over the results & create api repr function 
-            return res.json(results);
-        });
+	knex.select('title', 'completed', 'url')
+   .from('items')
+   .then(results => {
+   		// map over the results & create api repr function 
+  		return res.status(200).json(results);
+ 		});
 });
 
 app.get('/:id', (req, res) => {
@@ -31,78 +31,72 @@ app.get('/:id', (req, res) => {
     .from('items') 
     .where('id', id)
     .then(item => {
-      console.log(item[0]);
+      //console.log(item[0]);
       return res.status(200).json(item[0]);
     })
     .catch(err => { console.error(err) });
 });
 
 app.post('/', jsonParser, (req, res) => {
-    const { title } = req.body;
-    const ourUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`
-    knex.insert({
-            title: title,
-            completed: false,
-            url: ourUrl
-        })
-        .into('items')
-        .returning(['id', 'title', 'completed', 'url'])
-        .then(result => {
-            return knex('items')
-             .where('id', result[result.length - 1].id)
-             .update({ url: ourUrl.concat(result[result.length - 1].id) })
-             .then(isComplete => {
-                result[0].url = ourUrl.concat(result[result.length - 1].id);
-                return res.status(201).json(result[0]);
-              })
-              .catch(error => { console.log(error.stack) });
-        })
-        .catch(error => { console.log(error.stack) });
+ 	const { title } = req.body;
+  const ourUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`
+  knex.insert({
+  	title: title,
+  	completed: false,
+  	url: ourUrl
+  })
+  .into('items')
+	.returning(['id', 'title', 'completed', 'url'])
+	.then(result => {
+		return knex('items')
+  		.where('id', result[result.length - 1].id)
+    	.update({ url: ourUrl.concat(result[result.length - 1].id) })
+    	.returning(['id', 'title', 'completed', 'url']);
+	})
+	.then(output => {
+		console.log(output);
+		return res.status(201).json(output[0]);
+	})
+	.catch(error => { console.log(error.stack) });
 });
 
-
 app.delete('/:id', (req, res) => {
-    const {id} = req.params;
-    knex('items')
-     .where('id', id)
-     .del()
-     .then(result => {
-         console.log(result);
-         return res.sendStatus(204).send(result);
-     })
+	const {id} = req.params;
+  knex('items')
+  	.where('id', id)
+    .del()
+    .then(result => {
+    	console.log(result);
+      return res.sendStatus(204).send(result);
+    })
      .catch(err => {
-         console.log(err);
-     });
+      console.log(err);
+    });
 });
 
 app.delete('/', (req, res) => {
-    knex('items')
-        .del()
-        .then(result => {
-            return res.status(202).send('delete was successful');
-        })
+	knex('items')
+  	.del()
+    .then(result => {
+    	return res.status(202).send('delete was successful');
+   })
 });
 
 app.patch('/:id', jsonParser, (req, res) => {
-    const {title, completed} = req.body;
-    knex('items')
-        .where('id', req.params.id)
-        .update({title: title, completed: completed})
-        .then(result => {
-            knex.select('title', 'completed', 'url')
-                .from('items')
-                .where('id', req.params.id)
-                .then(item => {
-                    return res.status(202).json(item[0]);
-                }) 
-                .catch(error => { console.error(error) });
-        })
-        .catch(error => { console.error(error) });
+	const {title, completed} = req.body;
+  knex('items')
+   .where('id', req.params.id)
+   .update({title: title, completed: completed})
+   .then(result => {
+	 	return knex.select('title', 'completed', 'url')
+    	.from('items')
+    	.where('id', req.params.id)
+		})
+		.then(item => {
+       return res.status(202).json(item[0]);
+     }) 
+      .catch(error => { console.error(error) });
 });
-
-// app.put('/', (req, res) => {
-//   return res.send('delete was successful');
-// });
 
 app.listen(process.env.PORT || 8080);
 
