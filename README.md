@@ -72,10 +72,10 @@ It uses Express.js, Knex.js, and is backed up by a PostgreSQL database hosted on
 ```
 #### Set the db URL as an environment variable
 
-Alternatively, you could also use elephantSQL to set up a postgreSQL database
-
+Alternatively, you could use elephantSQL to set up a postgreSQL database
+Or configure access to your local postgreSQL server with the following
 ```bash
-% DATABASE_URL=postgres://<usernamegoeshere>:<passwordgoeshere>@localhost/todo-app node server.js
+> postgres://<usernamegoeshere>:<passwordgoeshere>@localhost/todo-app
 ```
 
 ## 5) Implement Continuous Integration testing with Travis CI
