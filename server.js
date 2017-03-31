@@ -9,15 +9,13 @@ const knex = require('knex')(DEV);
 const app = express();
 
 // The cors module to implement cors headers
-
 app.use(cors());
 
+// For static files if there is no client provided
 // app.use('/', express.static('public'));
 
-let listItems = [];
-
 app.get('/', (req, res) => {
-	knex.select('title', 'completed', 'url')
+	knex.select('title', 'completed', 'url', 'order')
    .from('items')
    .then(results => {
    		// map over the results & create api repr function 
@@ -26,32 +24,35 @@ app.get('/', (req, res) => {
 });
 
 app.get('/:id', (req, res) => {
-    const { id } = req.params;
-    knex.select('title', 'completed', 'url', 'id')
-    .from('items') 
-    .where('id', id)
-    .then(item => {
-      //console.log(item[0]);
-      return res.status(200).json(item[0]);
-    })
-    .catch(err => { console.error(err) });
+	const { id } = req.params;
+  knex.select('title', 'completed', 'url', 'id', 'order')
+   .from('items') 
+   .where('id', id)
+   .then(item => {
+   	//console.log(item[0]);
+    return res.status(200).json(item[0]);
+   })
+   .catch(err => { 
+			console.error(err) 
+	 });
 });
 
 app.post('/', jsonParser, (req, res) => {
- 	const { title } = req.body;
+ 	const { title, order } = req.body;
   const ourUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`
   knex.insert({
   	title: title,
+		order: order,
   	completed: false,
   	url: ourUrl
   })
   .into('items')
-	.returning(['id', 'title', 'completed', 'url'])
+	.returning(['id', 'title', 'completed', 'url', 'order'])
 	.then(result => {
 		return knex('items')
   		.where('id', result[result.length - 1].id)
     	.update({ url: ourUrl.concat(result[result.length - 1].id) })
-    	.returning(['id', 'title', 'completed', 'url']);
+    	.returning(['id', 'title', 'completed', 'url', 'order']);
 	})
 	.then(output => {
 		console.log(output);
@@ -69,33 +70,33 @@ app.delete('/:id', (req, res) => {
     	console.log(result);
       return res.sendStatus(204).send(result);
     })
-     .catch(err => {
+    .catch(err => {
       console.log(err);
     });
 });
 
 app.delete('/', (req, res) => {
 	knex('items')
-  	.del()
-    .then(result => {
-    	return res.status(202).send('delete was successful');
+   .del()
+   .then(result => {
+    return res.status(202).send('delete was successful');
    })
 });
 
 app.patch('/:id', jsonParser, (req, res) => {
-	const {title, completed} = req.body;
+	const {title, completed, order} = req.body;
   knex('items')
    .where('id', req.params.id)
-   .update({title: title, completed: completed})
+   .update({title: title, completed: completed, order: order})
    .then(result => {
-	 	return knex.select('title', 'completed', 'url')
+	 	return knex.select('title', 'completed', 'url', 'order')
     	.from('items')
     	.where('id', req.params.id)
 		})
 		.then(item => {
        return res.status(202).json(item[0]);
-     }) 
-      .catch(error => { console.error(error) });
+    }) 
+    .catch(error => { console.error(error) });
 });
 
 app.listen(process.env.PORT || 8080);
