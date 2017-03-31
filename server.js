@@ -1,9 +1,19 @@
+// Code Review: Colin and Ramon
+// README
+// There is a minor styling issue with #6 Deploy to Heroku. 
+// Right now it is  nested under #5.
+// The rest of the ReadMe is very concise and to the point.
+
+// CODE 
+// Could improve clarity with comments.
+
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jsonParser = bodyParser.json();
 
-require('dotenv').config();
+require('dotenv');
 
 const { DEV } = require('./config');
 const knex = require('knex')(DEV);
@@ -25,7 +35,7 @@ app.get('/', (req, res) => {
  		})
 		.catch(err => { 
 			console.error(err);
-			return res.status(500).json({message: "Internal server error"}); 
+			return res.status(500).json({message: "Internal server error"});
 	 });
 });
 
@@ -39,14 +49,14 @@ app.get('/:id', (req, res) => {
    })
    .catch(err => { 
 			console.error(err);
-			return res.status(500).json({message: "Internal server error"});  
+			return res.status(500).json({message: "Internal server error"});
 	 });
 });
 
 app.post('/', jsonParser, (req, res) => {
  	const { title, order } = req.body;
-	const	itemUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
-	// Ensure that the title in the request payload is valid
+	const ourUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+	// nice error handling
 	if (title === '' || title === ' '|| typeof title === 'undefined') {
 		return res.status(404).json({message: 'Bad request: enter valid item title'});
 	} 
@@ -54,16 +64,17 @@ app.post('/', jsonParser, (req, res) => {
   	title: title.trim(),
 		order: order,
   	completed: false,
-  	url: itemUrl
-  })
+  	url: ourUrl
+  }) 
   .into('items')
 	.returning(['id', 'title', 'completed', 'url', 'order'])
 	.then(result => {
+		// why are you returning below when you aleady do above?
 		return knex('items')
   		.where('id', result[result.length - 1].id)
-    	.update({ url: itemUrl.concat(result[result.length - 1].id) })
+    	.update({ url: ourUrl.concat(result[result.length - 1].id) })
     	.returning(['id', 'title', 'completed', 'url', 'order']);
-	})
+	}) // this whole thing doesn't make much sense to me^
 	.then(output => {
 		console.log(output);
 		return res.status(201).json(output[0]);
@@ -110,7 +121,7 @@ app.patch('/:id', jsonParser, (req, res) => {
 	 	return knex.select('title', 'completed', 'url', 'order')
     	.from('items')
     	.where('id', req.params.id)
-		})
+		}) //this could just be a .returning method in a single line
 		.then(item => {
        return res.status(202).json(item[0]);
     }) 
