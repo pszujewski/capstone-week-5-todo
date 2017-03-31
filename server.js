@@ -45,7 +45,7 @@ app.get('/:id', (req, res) => {
 
 app.post('/', jsonParser, (req, res) => {
  	const { title, order } = req.body;
-	const	url = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+	const	itemUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
 	// Ensure that the title in the request payload is valid
 	if (title === '' || title === ' '|| typeof title === 'undefined') {
 		return res.status(404).json({message: 'Bad request: enter valid item title'});
@@ -54,14 +54,14 @@ app.post('/', jsonParser, (req, res) => {
   	title: title.trim(),
 		order: order,
   	completed: false,
-  	url: url
+  	url: itemUrl
   })
   .into('items')
 	.returning(['id', 'title', 'completed', 'url', 'order'])
 	.then(result => {
 		return knex('items')
   		.where('id', result[result.length - 1].id)
-    	.update({ url: url.concat(result[result.length - 1].id) })
+    	.update({ url: itemUrl.concat(result[result.length - 1].id) })
     	.returning(['id', 'title', 'completed', 'url', 'order']);
 	})
 	.then(output => {
