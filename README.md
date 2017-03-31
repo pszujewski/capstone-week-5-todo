@@ -39,7 +39,7 @@ It uses Express.js, Knex.js, and is backed up by a PostgreSQL database hosted on
 #### Create table and sequence 
 
 ```bash
-> psql -U <usernamegoeshere> todo-app -f ~/path-to-schema.sql-file
+> psql -U <usernamegoeshere> todo-app -f <path-to-schema.sql-file>
 ```
 
 ## 4) Run the server

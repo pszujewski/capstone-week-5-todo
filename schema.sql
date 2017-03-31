@@ -3,7 +3,7 @@ CREATE TABLE items (
     title text NOT NULL,
     completed boolean,
     url text,
-    order smallint
+    "order" smallint
 );
 
 CREATE SEQUENCE items_id_seq
