@@ -15,12 +15,16 @@ app.use(cors());
 // app.use('/', express.static('public'));
 
 app.get('/', (req, res) => {
+	// return all fields except for id
 	knex.select('title', 'completed', 'url', 'order')
    .from('items')
    .then(results => {
-   		// map over the results & create api repr function 
   		return res.status(200).json(results);
- 		});
+ 		})
+		.catch(err => { 
+			console.error(err);
+			return res.status(500).json({message: "Internal server error"}); 
+	 });
 });
 
 app.get('/:id', (req, res) => {
@@ -29,19 +33,22 @@ app.get('/:id', (req, res) => {
    .from('items') 
    .where('id', id)
    .then(item => {
-   	//console.log(item[0]);
     return res.status(200).json(item[0]);
    })
    .catch(err => { 
-			console.error(err) 
+			console.error(err);
+			return res.status(500).json({message: "Internal server error"});  
 	 });
 });
 
 app.post('/', jsonParser, (req, res) => {
  	const { title, order } = req.body;
-  const ourUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`
+	const ourUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+	if (title === '' || title === ' '|| typeof title === 'undefined') {
+		return res.status(404).json({message: 'Bad request: enter valid item title'});
+	} 
   knex.insert({
-  	title: title,
+  	title: title.trim(),
 		order: order,
   	completed: false,
   	url: ourUrl
@@ -58,7 +65,10 @@ app.post('/', jsonParser, (req, res) => {
 		console.log(output);
 		return res.status(201).json(output[0]);
 	})
-	.catch(error => { console.log(error.stack) });
+	.catch(error => { 
+		console.log(error);
+		return res.status(500).json({message: "Internal server error"});  
+	});
 });
 
 app.delete('/:id', (req, res) => {
@@ -72,6 +82,7 @@ app.delete('/:id', (req, res) => {
     })
     .catch(err => {
       console.log(err);
+			return res.status(500).json({message: "Internal server error"}); 
     });
 });
 
@@ -79,8 +90,12 @@ app.delete('/', (req, res) => {
 	knex('items')
    .del()
    .then(result => {
-    return res.status(202).send('delete was successful');
+     return res.status(202).send('delete was successful');
    })
+	 .catch(err => {
+   	 console.log(err);
+		 return res.status(500).json({message: "Internal server error"}); 
+   });
 });
 
 app.patch('/:id', jsonParser, (req, res) => {
@@ -96,7 +111,10 @@ app.patch('/:id', jsonParser, (req, res) => {
 		.then(item => {
        return res.status(202).json(item[0]);
     }) 
-    .catch(error => { console.error(error) });
+    .catch(error => { 
+			console.error(error);
+			return res.status(500).json({message: "Internal server error"}); 
+		});
 });
 
 app.listen(process.env.PORT || 8080);
